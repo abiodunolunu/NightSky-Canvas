@@ -1,7 +1,7 @@
 import { Particle } from "./Particle";
 
 const gravity = 1;
-const friction = 0.9;
+const friction = 0.65;
 
 export class Star extends Particle {
   constructor(
