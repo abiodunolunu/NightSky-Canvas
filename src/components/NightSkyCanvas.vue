@@ -200,7 +200,7 @@ onMounted(() => {
         frameCount++;
         frameCount2++;
 
-        if (frameCount2 % utils.getRandomNumberInRange(30, 220) === 0) {
+        if (frameCount2 % utils.getRandomNumberInRange(30, 90) === 0) {
             addStar(1, canvas, ctx);
             frameCount2 = 0;
         }
