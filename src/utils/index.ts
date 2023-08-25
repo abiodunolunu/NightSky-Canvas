@@ -1,9 +1,9 @@
 export function getRandomNumberInRange(min: number, max: number) {
-    const random = Math.random()
+  const random = Math.random();
 
-    const range = max - min + 1
+  const range = max - min + 1;
 
-    const result = Math.floor(random * range) + min
+  const result = Math.floor(random * range) + min;
 
-    return result
+  return result;
 }

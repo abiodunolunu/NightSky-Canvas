@@ -1,198 +1,242 @@
-<script setup lang='ts'>
-import { onMounted } from 'vue';
-import { MOON_COLOR, STAR_COLOR } from '../CONSTANTS';
-import { MiniStar } from '../models/MiniStar';
-import { Star } from '../models/Star';
-import * as utils from '../utils';
-import { createFloor, createMountains, resizeCanvas } from '../utils/canvas-utils';
+<script setup lang="ts">
+import { onMounted } from "vue";
+import { MOON_COLOR, STAR_COLOR } from "../CONSTANTS";
+import { MiniStar } from "../models/MiniStar";
+import { Star } from "../models/Star";
+import * as utils from "../utils";
+import {
+  createFloor,
+  createMountains,
+  resizeCanvas,
+} from "../utils/canvas-utils";
 
-const backgroundStarsArray: Star[] = []
-const starsArray: Star[] = []
-const miniStarsArray: MiniStar[] = []
+const backgroundStarsArray: Star[] = [];
+const starsArray: Star[] = [];
+const miniStarsArray: MiniStar[] = [];
 
+function addBackgroundStars(
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
+  numberOfStars: number = 150
+) {
+  backgroundStarsArray.length = 0;
+  for (let i = 0; i < numberOfStars; i++) {
+    const x = utils.getRandomNumberInRange(0, canvas.width);
+    const y = utils.getRandomNumberInRange(0, canvas.height);
+    const radius = Math.random() * 1.5;
+    const star = new Star(canvas, ctx, x, y, radius, "#F0F0F0", 0.15, 0, !true);
 
-
-function addBackgroundStars(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, numberOfStars: number = 150) {
-    backgroundStarsArray.length = 0
-    for (let i = 0; i < numberOfStars; i++) {
-        const x = utils.getRandomNumberInRange(0, canvas.width)
-        const y = utils.getRandomNumberInRange(0, canvas.height)
-        const radius = Math.random() * 1.5
-        const star = new Star(canvas, ctx, x, y, radius, '#F0F0F0', 0.15, 0, !true)
-
-        star.update = function () {
-            star.x += star.velocityX
-            if (star.hasPassedRightSide()) {
-                star.x = -star.radius
-                star.y = utils.getRandomNumberInRange(0, canvas.height)
-            }
-            this.draw()
-        }
-        backgroundStarsArray.push(star)
-    }
+    star.update = function () {
+      star.x += star.velocityX;
+      if (star.hasPassedRightSide()) {
+        star.x = -star.radius;
+        star.y = utils.getRandomNumberInRange(0, canvas.height);
+      }
+      this.draw();
+    };
+    backgroundStarsArray.push(star);
+  }
 }
 
-function addStar(num: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
-    for (let i = 0; i < num; i++) {
-        const x = utils.getRandomNumberInRange(0, canvas.width)
-        const y = -100
-        const radius = utils.getRandomNumberInRange(8, 12)
-        const velX = utils.getRandomNumberInRange(-4, 4)
-        const velY = utils.getRandomNumberInRange(-4, 4)
-        const star = new Star(canvas, ctx, x, y, radius, STAR_COLOR, velX, velY, true)
+function addStar(
+  num: number,
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D
+) {
+  for (let i = 0; i < num; i++) {
+    const x = utils.getRandomNumberInRange(0, canvas.width);
+    const y = -100;
+    const radius = utils.getRandomNumberInRange(8, 12);
+    const velX = utils.getRandomNumberInRange(-4, 4);
+    const velY = utils.getRandomNumberInRange(-4, 4);
+    const star = new Star(
+      canvas,
+      ctx,
+      x,
+      y,
+      radius,
+      STAR_COLOR,
+      velX,
+      velY,
+      true
+    );
 
-        starsArray.push(star)
-    }
+    starsArray.push(star);
+  }
 }
 
-function shatterStar(star: Star, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
-    for (let i = 0; i < 10; i++) {
-        const velocity = {
-            x: utils.getRandomNumberInRange(-5, 5),
-            y: utils.getRandomNumberInRange(-15, 15)
-        }
+function shatterStar(
+  star: Star,
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D
+) {
+  for (let i = 0; i < 10; i++) {
+    const velocity = {
+      x: utils.getRandomNumberInRange(-5, 5),
+      y: utils.getRandomNumberInRange(-15, 15),
+    };
 
-        const miniStar = new MiniStar(canvas, ctx, star.x, star.y, 1.25, velocity.x, velocity.y)
-        miniStar.draw()
-        miniStarsArray.push(miniStar)
-    }
+    const miniStar = new MiniStar(
+      canvas,
+      ctx,
+      star.x,
+      star.y,
+      1.25,
+      velocity.x,
+      velocity.y
+    );
+    miniStar.draw();
+    miniStarsArray.push(miniStar);
+  }
 }
 
 function addMoon(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
-    const star = new Star(canvas, ctx, 80, 80, 32, MOON_COLOR, 0, 0, true)
-    star.draw()
+  const star = new Star(canvas, ctx, 80, 80, 32, MOON_COLOR, 0, 0, true);
+  star.draw();
 }
 
-
 onMounted(() => {
-    const canvas = document.querySelector('canvas')!
-    const ctx = canvas.getContext('2d')!
+  const canvas = document.querySelector("canvas")!;
+  const ctx = canvas.getContext("2d")!;
 
-    window.addEventListener('resize', function () {
-        init()
-    })
+  window.addEventListener("resize", function () {
+    init();
+  });
 
-    function init() {
-        resizeCanvas(canvas)
-        starsArray.length = 0
-        miniStarsArray.length = 0
-        addBackgroundStars(canvas, ctx, 160)
-        addStar(1, canvas, ctx)
+  function init() {
+    resizeCanvas(canvas);
+    starsArray.length = 0;
+    miniStarsArray.length = 0;
+    addBackgroundStars(canvas, ctx, 160);
+    addStar(1, canvas, ctx);
+  }
+
+  const skyColor = (function () {
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, "#040720"); // Top color
+    gradient.addColorStop(0.5, "#0B0E2B"); // Mid-top color
+    gradient.addColorStop(1, "#15214D"); // Mid-bottom color
+    return gradient;
+  })();
+
+  function addMoutainsAndFloor() {
+    const tenPercentOfCanvasWidth = 0.1 * canvas.width;
+    const canvasHeight = canvas.height;
+    const canvasWidth = canvas.width;
+
+    createMountains(
+      canvas,
+      ctx,
+      1,
+      -tenPercentOfCanvasWidth,
+      canvasWidth + tenPercentOfCanvasWidth,
+      canvasHeight / 2,
+      "#07112A"
+    );
+    createMountains(
+      canvas,
+      ctx,
+      2,
+      -tenPercentOfCanvasWidth,
+      canvasWidth + tenPercentOfCanvasWidth,
+      canvasHeight / 3,
+      "#151A38"
+    );
+    createMountains(
+      canvas,
+      ctx,
+      3,
+      -tenPercentOfCanvasWidth,
+      canvasWidth + tenPercentOfCanvasWidth,
+      canvasHeight / 4,
+      "#121A32"
+    );
+
+    createFloor(canvas, ctx);
+  }
+
+  function updateBackgroundStars() {
+    backgroundStarsArray.forEach((star) => {
+      star.update();
+    });
+  }
+
+  function updateFallingStars() {
+    starsArray.forEach((star, index) => {
+      star.update(() => shatterStar(star, canvas, ctx));
+
+      if (star.radius <= 3) {
+        starsArray.splice(index, 1);
+      }
+    });
+  }
+
+  function updateMiniStars() {
+    miniStarsArray.forEach((star, index) => {
+      star.update();
+
+      if (star.ttl <= 0) {
+        miniStarsArray.splice(index, 1);
+      }
+    });
+  }
+
+  let lastTime = performance.now();
+  let frameCount = 0;
+  let fps = 0;
+
+  let frameCount2 = 0;
+
+  function animate() {
+    ctx.fillStyle = skyColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    addMoon(canvas, ctx);
+    updateBackgroundStars();
+    addMoutainsAndFloor();
+    updateFallingStars();
+    updateMiniStars();
+
+    frameCount++;
+    frameCount2++;
+
+    if (frameCount2 % utils.getRandomNumberInRange(30, 220) === 0) {
+      addStar(1, canvas, ctx);
+      frameCount2 = 0;
     }
 
+    const currentTime = performance.now();
+    const deltaTime = currentTime - lastTime;
 
-    const skyColor = (function () {
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#040720');    // Top color
-        gradient.addColorStop(0.5, '#0B0E2B');  // Mid-top color
-        gradient.addColorStop(1, '#15214D');  // Mid-bottom color
-        return gradient
-    })()
-
-
-
-    function addMoutainsAndFloor() {
-        const tenPercentOfCanvasWidth = 0.1 * canvas.width
-        const canvasHeight = canvas.height
-        const canvasWidth = canvas.width
-
-        createMountains(canvas, ctx, 1, -tenPercentOfCanvasWidth, canvasWidth + tenPercentOfCanvasWidth, canvasHeight / 2, '#07112A')
-        createMountains(canvas, ctx, 2, -tenPercentOfCanvasWidth, canvasWidth + tenPercentOfCanvasWidth, canvasHeight / 3, '#151A38')
-        createMountains(canvas, ctx, 3, -tenPercentOfCanvasWidth, canvasWidth + tenPercentOfCanvasWidth, canvasHeight / 4, '#121A32')
-
-
-        createFloor(canvas, ctx)
+    if (deltaTime >= 1000) {
+      lastTime = performance.now();
+      fps = Math.round((frameCount * 1000) / deltaTime);
+      frameCount = 0;
     }
 
-    function updateBackgroundStars() {
-        backgroundStarsArray.forEach(star => {
-            star.update()
-        })
-    }
+    ctx.fillStyle = "white";
+    ctx.font = "14px monospace";
+    ctx.fillStyle = "white";
+    ctx.fillText(`FPS:${fps}`, 10, 20);
 
-    function updateFallingStars() {
-        starsArray.forEach((star, index) => {
-            star.update(() => shatterStar(star, canvas, ctx))
+    requestAnimationFrame(animate);
+  }
 
-            if (star.radius <= 3) {
-                starsArray.splice(index, 1)
-            }
-        })
-    }
+  init();
 
-    function updateMiniStars() {
-        miniStarsArray.forEach((star, index) => {
-            star.update()
-
-            if (star.ttl <= 0) {
-                miniStarsArray.splice(index, 1)
-            }
-        })
-    }
-
-
-
-    let lastTime = performance.now()
-    let frameCount = 0
-    let fps = 0
-
-    let frameCount2 = 0
-
-    function animate() {
-
-
-        ctx.fillStyle = skyColor
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-        addMoon(canvas, ctx)
-        updateBackgroundStars()
-        addMoutainsAndFloor()
-        updateFallingStars()
-        updateMiniStars()
-
-
-        frameCount++
-        frameCount2++
-
-        if (frameCount2 % utils.getRandomNumberInRange(30, 220) === 0) {
-            addStar(1, canvas, ctx)
-            frameCount2 = 0
-        }
-
-
-        const currentTime = performance.now()
-        const deltaTime = currentTime - lastTime
-
-        if (deltaTime >= 1000) {
-            lastTime = performance.now()
-            fps = Math.round((frameCount * 1000 / deltaTime))
-            frameCount = 0
-        }
-
-        ctx.fillStyle = 'white'
-        ctx.font = "14px monospace";
-        ctx.fillStyle = 'white'
-        ctx.fillText(`FPS:${fps}`, 10, 20)
-
-        requestAnimationFrame(animate)
-    }
-
-
-    init()
-
-    animate()
-})
+  animate();
+});
 </script>
 
 <template>
-    <div>
-        <canvas></canvas>
-    </div>
+  <div>
+    <canvas></canvas>
+  </div>
 </template>
 
 <style>
 canvas {
-    border: 1px solid black;
-    /* background-color: black; */
+  border: 1px solid black;
+  /* background-color: black; */
 }
 </style>

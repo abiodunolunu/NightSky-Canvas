@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import NightSkyCanvas from './components/NightSkyCanvas.vue';
+import NightSkyCanvas from "./components/NightSkyCanvas.vue";
 </script>
 
 <template>
