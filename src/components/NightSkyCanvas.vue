@@ -38,7 +38,7 @@ function addStar(num: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingCon
         const y = -100
         const radius = utils.getRandomNumberInRange(8, 12)
         const velX = utils.getRandomNumberInRange(-4, 4)
-        const velY = utils.getRandomNumberInRange(1, 4)
+        const velY = utils.getRandomNumberInRange(-4, 4)
         const star = new Star(canvas, ctx, x, y, radius, STAR_COLOR, velX, velY, true)
 
         starsArray.push(star)
