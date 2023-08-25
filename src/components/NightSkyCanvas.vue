@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { onMounted } from 'vue';
-import { STAR_COLOR } from '../CONSTANTS';
+import { MOON_COLOR, STAR_COLOR } from '../CONSTANTS';
 import { MiniStar } from '../models/MiniStar';
 import { Star } from '../models/Star';
 import * as utils from '../utils';
@@ -58,6 +58,11 @@ function shatterStar(star: Star, canvas: HTMLCanvasElement, ctx: CanvasRendering
     }
 }
 
+function addMoon(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+    const star = new Star(canvas, ctx, 80, 80, 32, MOON_COLOR, 0, 0, true)
+    star.draw()
+}
+
 
 onMounted(() => {
     const canvas = document.querySelector('canvas')!
@@ -71,8 +76,8 @@ onMounted(() => {
         resizeCanvas(canvas)
         starsArray.length = 0
         miniStarsArray.length = 0
-        addStar(2, canvas, ctx)
         addBackgroundStars(canvas, ctx, 160)
+        addStar(1, canvas, ctx)
     }
 
 
@@ -83,11 +88,6 @@ onMounted(() => {
         gradient.addColorStop(1, '#15214D');  // Mid-bottom color
         return gradient
     })()
-
-
-
-
-
 
 
 
@@ -136,23 +136,30 @@ onMounted(() => {
     let frameCount = 0
     let fps = 0
 
+    let frameCount2 = 0
+
     function animate() {
 
 
         ctx.fillStyle = skyColor
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-
+        addMoon(canvas, ctx)
         updateBackgroundStars()
         addMoutainsAndFloor()
         updateFallingStars()
         updateMiniStars()
 
-        if (starsArray.length < 2) {
-            // addStar(1, canvas, ctx)
-        }
 
         frameCount++
+        frameCount2++
+
+        if (frameCount2 % utils.getRandomNumberInRange(30, 220) === 0) {
+            addStar(1, canvas, ctx)
+            frameCount2 = 0
+        }
+
+
         const currentTime = performance.now()
         const deltaTime = currentTime - lastTime
 
@@ -163,10 +170,9 @@ onMounted(() => {
         }
 
         ctx.fillStyle = 'white'
-        ctx.font = "120px monospace";
-        ctx.strokeStyle = 'white'
-        ctx.strokeText(`FPS:${fps}`, 10, 120)
-        // ctx.fillText(`FPS:${fps}`, 10, 120)
+        ctx.font = "14px monospace";
+        ctx.fillStyle = 'white'
+        ctx.fillText(`FPS:${fps}`, 10, 20)
 
         requestAnimationFrame(animate)
     }
@@ -187,7 +193,6 @@ onMounted(() => {
 <style>
 canvas {
     border: 1px solid black;
-    background-color: black;
-    filter: blur(1px);
+    /* background-color: black; */
 }
 </style>
